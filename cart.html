@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title> Cart items</title>
+  <style>
+    .product {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .product img {
+      width: 100px;
+      height: auto;
+    }
+
+    .details {
+      flex-grow: 1;
+    }
+
+    .delete-button {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .total {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 20px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cart items</h1>
+  <div id="cart-items"></div>
+  <div id="total-price" class="total"></div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const container = document.getElementById('cart-items');
+    const totalContainer = document.getElementById('total-price');
+
+    function renderCart() {
+      container.innerHTML = '';
+      totalContainer.innerHTML = '';
+
+      if (cart.length === 0) {
+        container.innerHTML = '<p> The Cart is Empty</p>';
+        return;
+      }
+
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="details">
+            <h3>${item.name}</h3>
+            <p>السعر: $${item.price}</p>
+          </div>
+          <button class="delete-button" onclick="deleteItem(${index})">حذف</button>
+        `;
+        container.appendChild(div);
+
+        // نحسب السعر الإجمالي
+        total += parseFloat(item.price);
+      });
+
+      // نعرض السعر الكلي
+      totalContainer.innerHTML = `الإجمالي: $${total.toFixed(2)}`;
+    }
+
+    function deleteItem(index) {
+      cart.splice(index, 1); // نحذف العنصر
+      localStorage.setItem('cart', JSON.stringify(cart)); // نحفظ التغيير
+      renderCart(); // نعيد عرض السلة
+    }
+
+    renderCart(); // أول تشغيل
+  </script>
+</body>
+</html>
